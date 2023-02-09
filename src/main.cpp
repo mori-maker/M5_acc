@@ -30,6 +30,13 @@ float pitch = 0;
 float yow = 0;
 
 float temp = 0;
+int pre_output_time=0;
+
+void accTest_init(void);
+void accTest(void);
+void accLevel_init(void);
+void accLevel(void);
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -38,11 +45,13 @@ void setup() {
   M5.Lcd.fillScreen(BLACK);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(100, 0);
-  M5.Lcd.println("MPU6886 TEST");
-  M5.Lcd.setCursor(10, 25);
-  M5.Lcd.println("  X      Y       Z");
-  imu6886.Init(21, 22);
 
+  //  accTest_init();
+  accLevel_init();
+  
+  imu6886.Init(21, 22);
+  Serial.begin(115200);
+  
   for (int i=1; i<50;i++)
     {
         imu6886.getAccelData(&accX,&accY,&accZ);
@@ -70,8 +79,29 @@ void loop() {
     
   pitch = atan2(accY,accZ) * RAD2DEG;
   roll = atan2(accX , sqrt(pow(accY,2) + pow(accZ,2))) * RAD2DEG;
+
+  //  accTest();
+  accLevel();
+  delay(100);
   
-  M5.Lcd.setCursor(10, 70);
+  //  Serial.printf("Angle : %.2f   %.2f   %.2f  \n ",roll ,pitch , yow);
+  if((millis() - pre_output_time) > 1000)
+    {
+      Serial.printf("%.2f %.2f \n" ,roll , pitch);
+	pre_output_time =millis();
+	  }
+}
+
+void accTest_init()
+{
+  M5.Lcd.println("MPU6886 TEST");
+  M5.Lcd.setCursor(10, 25);
+  M5.Lcd.println("  X      Y       Z");
+}
+  
+void accTest()
+{
+   M5.Lcd.setCursor(10, 70);
   M5.Lcd.printf("%.2f   %.2f   %.2f   ", gyroX, gyroY,gyroZ);
   M5.Lcd.setCursor(270, 70);
   M5.Lcd.print("o/s");
@@ -83,6 +113,30 @@ void loop() {
   M5.Lcd.printf("%.2f   %.2f   %.2f   ",roll ,pitch , yow);
   M5.Lcd.setCursor(270, 210);
   M5.Lcd.print("deg");
-
-  delay(100);
 }
+
+void accLevel_init()
+{
+  M5.Lcd.println("MPU6886 Level");
+  M5.Lcd.setCursor(80,120 );
+  M5.Lcd.println("Calibration...");
+  M5.Lcd.drawCircle(160,120,100,TFT_GREEN);  
+}
+  
+
+  
+void accLevel()
+{
+  int x_position = 160;
+  int y_positon = 120;
+  
+
+  x_position = 160 + roll*200/180;
+  y_positon = 120 - pitch*200/180;
+    
+
+  M5.Lcd.fillCircle(160,120,99,TFT_BLACK);
+  M5.Lcd.fillCircle(x_position,y_positon,10,TFT_RED);
+}
+
+  
