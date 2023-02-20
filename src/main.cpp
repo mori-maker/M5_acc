@@ -118,7 +118,18 @@ void loop() {
   if((t - pre_output_time) > 100)
     {
       print_time = (float)t / 1000000.0;
-      Serial.printf("%.2f %.2f %.2f %.2f %.2f \n" ,print_time, roll , pitch, kal_roll,kal_pitch );
+      //      Serial.print("%.2f %.2f %.2f %.2f %.2f \n" ,print_time, roll , pitch, kal_roll,kal_pitch );
+
+      Serial.print(roll);
+       Serial.print(",");
+       Serial.print(pitch);
+       Serial.print(",");
+       Serial.print(kal_roll);
+       Serial.print(",");
+       Serial.println(kal_pitch);
+       
+       
+      //      Serial.println(2);
       pre_output_time = t;
 	  }
 }
